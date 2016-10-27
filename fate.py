@@ -9,7 +9,7 @@ import redis
 client = discord.Client()
 chain_length = 2
 max_words = 30
-messages_to_generate = 5
+messages_to_generate = 20
 separator = '\x01'
 stop_word = '\x02'
 redis_conn = redis.Redis()
@@ -53,26 +53,41 @@ def on_ready():
 @client.event
 @asyncio.coroutine
 def on_message(incoming_mes):
-    if (random.randint(1,40) == 32 and incoming_mes.author.id != "169962512194732034"):
+    if (incoming_mes.author.id != "169962512194732034" and incoming_mes.channel.id not in ["219895037608198144", "199287746743894016", "162643560582086657"]):
         for words in split_message(sanitize_message(incoming_mes.content)):
             key = separator.join(words[:-1])
             redis_conn.sadd(make_key(key), words[-1])
-            if (1==1):
-                best_message = ''
-                for i in range(messages_to_generate):
-                    generated = generate_message(seed=key)
-                    if len(generated) > len(best_message):
-                        best_message = generated            
-                if best_message:
-                    messages.append(best_message)      
+            best_message = ''
+            for i in range(messages_to_generate):
+                generated = generate_message(seed=key)
+                if len(generated) > len(best_message):
+                    best_message = generated            
+            if best_message:
+                messages.append(best_message)      
         if len(messages):
-            yield from client.send_message(incoming_mes.channel, random.choice(messages))
+            if (random.randint(1,40) == 32):
+                yield from client.send_message(incoming_mes.channel, random.choice(messages))
             
     if (incoming_mes.content.startswith("RIP")):
         yield from client.send_message(incoming_mes.channel, 'Ya, RIP')
 
     if (incoming_mes.content.startswith(":")):
-        yield from client.send_file(incoming_mes.channel, "saemotes/" + incoming_mes.content, filename = "emote.png")                    
+        if (incoming_mes.content.endswith(":")):
+            yield from client.send_file(incoming_mes.channel, "saemotes/" + incoming_mes.content, filename = "emote.png") 
+            
+    if (incoming_mes.author.id != "169962512194732034" and incoming_mes.channel.id == "162770083993616385" and random.randint(1,2) == 2):
+        for words in split_message(sanitize_message(incoming_mes.content)):
+            key = separator.join(words[:-1])
+            redis_conn.sadd(make_key(key), words[-1])
+            best_message = ''
+            for i in range(messages_to_generate):
+                generated = generate_message(seed=key)
+                if len(generated) > len(best_message):
+                    best_message = generated            
+            if best_message:
+                messages.append(best_message)      
+        if len(messages):
+            yield from client.send_message(incoming_mes.channel, random.choice(messages))
             
                                            
 client.run('MTY5OTYyNTEyMTk0NzMyMDM0.CgPsHA.bM5Nw9fyj0YrvsVMEKAZLFSsC84')
