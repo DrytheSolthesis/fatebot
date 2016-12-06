@@ -55,14 +55,15 @@ def get_sockets(player_dictionary):
 
         if int(player_dictionary["items"][item]["id"]) in LEG_WITH_SOCKET:
             sockets += 1
+            
+        else:
+            for bonus in player_dictionary["items"][item]["bonusLists"]:
+                if bonus == 1808:  # 1808 is Legion prismatic socket bonus
+                    sockets += 1
 
-        for bonus in player_dictionary["items"][item]["bonusLists"]:
-            if bonus == 1808:  # 1808 is Legion prismatic socket bonus
-                sockets += 1
-
-        if item in ["neck", "finger1", "finger2"]:
-            if player_dictionary["items"][item]["context"] == "trade-skill":
-                sockets += 1
+            if item in ["neck", "finger1", "finger2"]:
+                if player_dictionary["items"][item]["context"] == "trade-skill":
+                    sockets += 1
 
         for ttip in player_dictionary["items"][item]["tooltipParams"]:
             if item in "mainHand" or item in "offHand":  # Ignore Relic
@@ -111,31 +112,6 @@ def get_raid_progression(player_dictionary, raid):
             "heroic": heroic,
             "mythic": mythic,
             "total_bosses": len(r["bosses"])}
-
-def get_mythic_progression(player_dictionary):
-    achievements = player_dictionary["achievements"]
-    plus_two = 0
-    plus_five = 0
-    plus_ten = 0
-
-    if 33096 in achievements["criteria"]:
-        index = achievements["criteria"].index(33096)
-        plus_two = achievements["criteriaQuantity"][index]
-
-    if 33097 in achievements["criteria"]:
-        index = achievements["criteria"].index(33097)
-        plus_five = achievements["criteriaQuantity"][index]
-
-    if 33098 in achievements["criteria"]:
-        index = achievements["criteria"].index(33098)
-        plus_ten = achievements["criteriaQuantity"][index]
-
-    return {
-        "plus_two": plus_two,
-        "plus_five": plus_five,
-        "plus_ten": plus_ten
-    }
-
 
 def get_mythic_progression(player_dictionary):
     achievements = player_dictionary["achievements"]
@@ -319,8 +295,8 @@ def on_message(incoming_mes):
             try:
                 i = str(incoming_mes.content[5:]).split('-')
                 print(i)
-                name = i[1]
-                server = i[0]
+                name = i[0]
+                server = i[1]
                 character_info = get_char(name, server, target_region)
                 yield from client.send_message(incoming_mes.channel, character_info)
             except Exception as e:
