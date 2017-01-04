@@ -22,8 +22,9 @@ messages = []
 simming = None
 
 LEG_WITH_SOCKET = [
-    132369, 132410, 137044, 132444, 132449, 132452, 132460, 133973, 133974, 137037, 137038, 137039, 137040,
-    137041, 137042, 137043, 132378, 137045, 137046, 137047, 137048, 137049, 137050, 137051, 137052, 137054, 137055,
+    132369, 132410, 137044, 132444, 132449, 132452, 132460, 133973, 133974,
+    137037, 137038, 137039, 137040, 137041, 137042, 137043, 132378, 137045,
+    137046, 137047, 137048, 137049, 137050, 137051, 137052, 137054, 137055,
     137220, 137223, 137276, 137382, 138854
 ]
 
@@ -34,10 +35,11 @@ default_region = "us"
 
 region_locale = {
     'us': ['us', 'en_US', 'en'],
-#    'kr': ['kr', 'ko_KR', 'ko'],
-#    'tw': ['tw', 'zh_TW', 'zh'],
+    #    'kr': ['kr', 'ko_KR', 'ko'],
+    #    'tw': ['tw', 'zh_TW', 'zh'],
     'eu': ['eu', 'en_GB', 'en']
 }
+
 
 def get_sockets(player_dictionary):
     """
@@ -55,14 +57,15 @@ def get_sockets(player_dictionary):
 
         if int(player_dictionary["items"][item]["id"]) in LEG_WITH_SOCKET:
             sockets += 1
-            
+
         else:
             for bonus in player_dictionary["items"][item]["bonusLists"]:
                 if bonus == 1808:  # 1808 is Legion prismatic socket bonus
                     sockets += 1
 
             if item in ["neck", "finger1", "finger2"]:
-                if player_dictionary["items"][item]["context"] == "trade-skill":
+                if player_dictionary["items"][item][
+                        "context"] == "trade-skill":
                     sockets += 1
 
         for ttip in player_dictionary["items"][item]["tooltipParams"]:
@@ -71,8 +74,7 @@ def get_sockets(player_dictionary):
             if "gem" in ttip:  # Equipped gems are listed as gem0, gem1, etc...
                 equipped_gems += 1
 
-    return {"total_sockets": sockets,
-            "equipped_gems": equipped_gems}
+    return {"total_sockets": sockets, "equipped_gems": equipped_gems}
 
 
 def get_enchants(player_dictionary):
@@ -94,8 +96,10 @@ def get_enchants(player_dictionary):
 
 
 def get_raid_progression(player_dictionary, raid):
-    r = [x for x in player_dictionary["progression"]
-    ["raids"] if x["name"] in raid][0]
+    r = [
+        x for x in player_dictionary["progression"]["raids"]
+        if x["name"] in raid
+    ][0]
     normal = 0
     heroic = 0
     mythic = 0
@@ -108,10 +112,13 @@ def get_raid_progression(player_dictionary, raid):
         if boss["mythicKills"] > 0:
             mythic += 1
 
-    return {"normal": normal,
-            "heroic": heroic,
-            "mythic": mythic,
-            "total_bosses": len(r["bosses"])}
+    return {
+        "normal": normal,
+        "heroic": heroic,
+        "mythic": mythic,
+        "total_bosses": len(r["bosses"])
+    }
+
 
 def get_mythic_progression(player_dictionary):
     achievements = player_dictionary["achievements"]
@@ -131,16 +138,14 @@ def get_mythic_progression(player_dictionary):
         index = achievements["criteria"].index(33098)
         plus_ten = achievements["criteriaQuantity"][index]
 
-    return {
-        "plus_two": plus_two,
-        "plus_five": plus_five,
-        "plus_ten": plus_ten
-    }
+    return {"plus_two": plus_two, "plus_five": plus_five, "plus_ten": plus_ten}
 
 
 def get_char(name, server, target_region):
-    r = requests.get("https://%s.api.battle.net/wow/character/%s/%s?fields=items+progression+achievements&locale=%s&apikey=%s" % (
-            region_locale[target_region][0], server, name, region_locale[target_region][1], API_KEY))
+    r = requests.get(
+        "https://%s.api.battle.net/wow/character/%s/%s?fields=items+progression+achievements&locale=%s&apikey=%s"
+        % (region_locale[target_region][0], server, name,
+           region_locale[target_region][1], API_KEY))
 
     if r.status_code != 200:
         raise Exception("Could Not Find Character (No 200 from API)")
@@ -148,8 +153,9 @@ def get_char(name, server, target_region):
     player_dict = json.loads(r.text)
 
     r = requests.get(
-        "https://%s.api.battle.net/wow/data/character/classes?locale=%s&apikey=%s" % (
-            region_locale[target_region][0], region_locale[target_region][1], API_KEY))
+        "https://%s.api.battle.net/wow/data/character/classes?locale=%s&apikey=%s"
+        % (region_locale[target_region][0], region_locale[target_region][1],
+           API_KEY))
     if r.status_code != 200:
         raise Exception("Could Not Find Character Classes (No 200 From API)")
     class_dict = json.loads(r.text)
@@ -163,11 +169,13 @@ def get_char(name, server, target_region):
     mythic_progress = get_mythic_progression(player_dict)
 
     armory_url = 'http://{}.battle.net/wow/{}/character/{}/{}/advanced'.format(
-        region_locale[target_region][0], region_locale[target_region][2], server, name)
+        region_locale[target_region][0], region_locale[target_region][2],
+        server, name)
 
     return_string = ''
     return_string += "**%s** - **%s** - **%s %s**\n" % (
-        name.title(), server.title(), player_dict['level'], class_dict[player_dict['class']])
+        name.title(), server.title(), player_dict['level'],
+        class_dict[player_dict['class']])
     return_string += '<{}>\n'.format(armory_url)
     return_string += '```CSS\n'  # start Markdown
 
@@ -175,30 +183,29 @@ def get_char(name, server, target_region):
     return_string += "Equipped Item Level: %s\n" % equipped_ivl
 
     # Mythic Progression
-    return_string += "Mythics: +2: %s, +5: %s, +10: %s\n" % (mythic_progress["plus_two"],
-                                                             mythic_progress["plus_five"],
-                                                             mythic_progress["plus_ten"])
+    return_string += "Mythics: +2: %s, +5: %s, +10: %s\n" % (
+        mythic_progress["plus_two"], mythic_progress["plus_five"],
+        mythic_progress["plus_ten"])
 
     # Raid Progression
-    return_string += "EN: {1}/{0} (N), {2}/{0} (H), {3}/{0} (M)\n".format(en_progress["total_bosses"],
-                                                                          en_progress["normal"],
-                                                                          en_progress["heroic"],
-                                                                          en_progress["mythic"])
-    return_string += "TOV: {1}/{0} (N), {2}/{0} (H), {3}/{0} (M)\n".format(tov_progress["total_bosses"],
-                                                                           tov_progress["normal"],
-                                                                           tov_progress["heroic"],
-                                                                           tov_progress["mythic"])
+    return_string += "EN: {1}/{0} (N), {2}/{0} (H), {3}/{0} (M)\n".format(
+        en_progress["total_bosses"], en_progress["normal"],
+        en_progress["heroic"], en_progress["mythic"])
+    return_string += "TOV: {1}/{0} (N), {2}/{0} (H), {3}/{0} (M)\n".format(
+        tov_progress["total_bosses"], tov_progress["normal"],
+        tov_progress["heroic"], tov_progress["mythic"])
 
     # Gems
-    return_string += "Gems Equipped: %s/%s\n" % (
-        sockets["equipped_gems"], sockets["total_sockets"])
+    return_string += "Gems Equipped: %s/%s\n" % (sockets["equipped_gems"],
+                                                 sockets["total_sockets"])
 
     # Enchants
-    return_string += "Enchants: %s/%s\n" % (enchants["enchantable_slots"] - enchants["total_missing"],
-                                            enchants["enchantable_slots"])
+    return_string += "Enchants: %s/%s\n" % (
+        enchants["enchantable_slots"] - enchants["total_missing"],
+        enchants["enchantable_slots"])
     if enchants["total_missing"] > 0:
-        return_string += "Missing Enchants: {0}".format(
-            ", ".join(enchants["missing_slots"]))
+        return_string += "Missing Enchants: {0}".format(", ".join(enchants[
+            "missing_slots"]))
 
     return_string += '```'  # end Markdown
     return return_string
@@ -206,6 +213,19 @@ def get_char(name, server, target_region):
 
 def make_key(k):
     return '-'.join((prefix, k))
+
+
+def profanity_filter(message):
+    clean_words = [
+        "unicorn", "artichoke", "Corned beef and cabbage", 'Trotsky-Leninism',
+        "Chili with beans", "solipsism"
+    ]
+    bad_words_file = open('bad_words.txt', 'r')
+    bad_words = set(line.strip('\n') for line in open('bad_words.txt'))
+    clean_word = random.choice(clean_words)
+    exp = '(%s)' % '|'.join(bad_words)
+    r = re.compile(exp, re.IGNORECASE)
+    return r.sub(clean_word, message)
 
 
 def sanitize_message(message):
@@ -233,26 +253,25 @@ def generate_message(seed):
     return ' '.join(gen_words)
 
 
-
 def sim_char(incoming_data):
     global simming
     print("RUNNING SIM")
     characterinc = incoming_data.content[6:]
     character = ','.join(characterinc.split('-')[::-1])
     command = '/var/www/simc.aki.fyi/simc/engine/simc'
-    arg1 = 'armory=us,'+character
-    arg2 = 'iterations=10000'
-    arg3 = 'calculate_scale_factors=1'
-    arg4 = 'html=/var/www/simc.aki.fyi/'+characterinc+'.html'
+    arg1 = 'armory=us,' + character
+    arg2 = 'settings.simc'
+    arg3 = 'html=/var/www/simc.aki.fyi/' + characterinc + '.html'
+    if characterinc.lower() == 'animalia-sargeras':
+        arg2 = 'druidapl.simc'
     try:
-        os.remove(arg4[5:])
+        os.remove(arg3[5:])
     except OSError:
         pass
-    print(command, arg1, arg2, arg3, arg4)
-    call([command, arg1, arg2, arg3, arg4])
+    print(command, arg1, arg2, arg3)
+    call([command, arg1, arg2, arg3])
     print("DONE")
     simming = None
-
 
 
 @client.event
@@ -263,10 +282,12 @@ def on_ready():
     print(client.user.id)
     print('------')
 
+
 @client.event
 @asyncio.coroutine
 def on_message(incoming_mes):
     global simming
+    incoming_mes.content = profanity_filter(incoming_mes.content)
     if (incoming_mes.author.id != "169962512194732034" and
             incoming_mes.channel.id not in [
                 "219895037608198144", "199287746743894016",
@@ -291,29 +312,37 @@ def on_message(incoming_mes):
         yield from client.send_message(incoming_mes.channel, 'Ya, RIP')
 
     if (incoming_mes.content.startswith("~pug")):
-            target_region = default_region
-            try:
-                i = str(incoming_mes.content[5:]).split('-')
-                print(i)
-                name = i[0]
-                server = i[1]
-                character_info = get_char(name, server, target_region)
-                yield from client.send_message(incoming_mes.channel, character_info)
-            except Exception as e:
-                yield from client.send_message(incoming_mes.channel,e+"\nError With Name or Server\nUse: ~pug <name> <server>\nHyphenate Two Word Servers (Ex: Twisting-Nether)")
-
+        target_region = default_region
+        try:
+            i = str(incoming_mes.content[5:]).split('-')
+            print(i)
+            name = i[0]
+            server = i[1]
+            character_info = get_char(name, server, target_region)
+            yield from client.send_message(incoming_mes.channel,
+                                           character_info)
+        except Exception as e:
+            yield from client.send_message(
+                incoming_mes.channel, e +
+                "\nError With Name or Server\nUse: ~pug <name> <server>\nHyphenate Two Word Servers (Ex: Twisting-Nether)"
+            )
 
     if (incoming_mes.content.startswith("~simc")):
         if simming:
-            yield from client.send_message(incoming_mes.channel, 'A sim is currently running, please wait.')
+            yield from client.send_message(
+                incoming_mes.channel,
+                'A sim is currently running, please wait.')
         if not simming:
-            yield from client.send_message(incoming_mes.channel, 'Running your sim...')
-            yield from client.send_message(incoming_mes.channel, 'Your sim will show up here when complete: http://simc.aki.fyi/'+incoming_mes.content[6:]+'.html')
+            yield from client.send_message(incoming_mes.channel,
+                                           'Running your sim...')
+            yield from client.send_message(
+                incoming_mes.channel,
+                'Your sim will show up here when complete: http://simc.aki.fyi/'
+                + incoming_mes.content[6:] + '.html')
             simming = True
             incoming_data = incoming_mes
-            thread = threading.Thread(target = sim_char, args = (incoming_data, ))
+            thread = threading.Thread(target=sim_char, args=(incoming_data, ))
             thread.start()
-
 
     if (incoming_mes.content.startswith(":")):
         if (incoming_mes.content.endswith(":")):

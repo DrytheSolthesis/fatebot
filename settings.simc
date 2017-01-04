@@ -1,0 +1,4 @@
+iterations=10000
+calculate_scale_factors=1
+skill=0.9
+fight_style=LightMovement
