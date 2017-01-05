@@ -310,6 +310,9 @@ def on_message(incoming_mes):
 
     if (incoming_mes.content.startswith("RIP")):
         yield from client.send_message(incoming_mes.channel, 'Ya, RIP')
+        
+    if (incoming_mes.content.startswith("~logs")):
+        yield from client.send_message(incoming_mes.channel, 'CogDis\'s WCL calendar: https://www.warcraftlogs.com/guilds/teamcalendar/1637')
 
     if (incoming_mes.content.startswith("~pug")):
         target_region = default_region
