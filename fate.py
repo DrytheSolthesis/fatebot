@@ -258,14 +258,16 @@ def sim_char(incoming_data):
     print("RUNNING SIM")
     characterinc = incoming_data.content[6:]
     character = ','.join(characterinc.split('-')[::-1])
-    command = '/var/www/simc.aki.fyi/simc/engine/simc'
+    command = '/home/autumn/simcraft/simc/engine/simc'
     arg1 = 'armory=us,' + character
     arg2 = 'settings.simc'
-    arg3 = 'html=/var/www/simc.aki.fyi/' + characterinc + '.html'
+    arg3 = 'html=/home/www/simc.aki.fyi/' + characterinc + '.html'
     if characterinc.lower() == 'animalia-sargeras':
         arg2 = 'druidapl.simc'
     try:
-        os.remove(arg3[5:])
+        fd = open(arg3[5:], "w")
+        fd.write("<h3>SIM IN PROGRESS</h3>")
+        fd.close()
     except OSError:
         pass
     print(command, arg1, arg2, arg3)
@@ -310,9 +312,12 @@ def on_message(incoming_mes):
 
     if (incoming_mes.content.startswith("RIP")):
         yield from client.send_message(incoming_mes.channel, 'Ya, RIP')
-        
+
     if (incoming_mes.content.startswith("~logs")):
-        yield from client.send_message(incoming_mes.channel, 'CogDis\'s WCL calendar: https://www.warcraftlogs.com/guilds/teamcalendar/1637')
+        yield from client.send_message(
+            incoming_mes.channel,
+            'CogDis\'s WCL calendar: https://www.warcraftlogs.com/guilds/teamcalendar/1637'
+        )
 
     if (incoming_mes.content.startswith("~pug")):
         target_region = default_region
@@ -340,7 +345,7 @@ def on_message(incoming_mes):
                                            'Running your sim...')
             yield from client.send_message(
                 incoming_mes.channel,
-                'Your sim will show up here when complete: http://simc.aki.fyi/'
+                'Your sim will show up here when complete: https://simc.aki.fyi/'
                 + incoming_mes.content[6:] + '.html')
             simming = True
             incoming_data = incoming_mes
