@@ -316,7 +316,7 @@ def on_message(incoming_mes):
     if (incoming_mes.content.startswith("~logs")):
         yield from client.send_message(
             incoming_mes.channel,
-            'CogDis\'s WCL calendar: https://www.warcraftlogs.com/guilds/teamcalendar/1637'
+            'CogDis\'s WCL calendar: https://www.warcraftlogs.com/guilds/17287'
         )
 
     if (incoming_mes.content.startswith("~pug")):
