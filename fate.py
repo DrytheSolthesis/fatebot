@@ -260,13 +260,11 @@ def generate_message(seed):
 def sim_char(incoming_data):
     global simming
     print("RUNNING SIM")
-    characterinc = incoming_data.content[6:]
-    if '-' not in characterinc: characterinc+="-sargeras"
-    character = ','.join(characterinc.split('-')[::-1])
+    character = ','.join(incoming_data.split('-')[::-1])
     command = '/home/autumn/simcraft/simc/engine/simc'
     arg1 = 'armory=us,' + character
     arg2 = 'settings.simc'
-    arg3 = 'html=/home/www/simc.aki.fyi/' + characterinc + '.html'
+    arg3 = 'html=/home/www/simc.aki.fyi/' + incoming_data + '.html'
     try:
         fd = open(arg3[5:], "w")
         fd.write("<h3>SIM IN PROGRESS</h3>")
@@ -327,8 +325,8 @@ def on_message(incoming_mes):
             i = str(incoming_mes.content[5:]).split('-')
             print(i)
             name = i[0]
-            server = i[1]
-            if (!server): server = "sargeras"
+            if (len(i) > 1): server = i[1]
+            if (len(i) == 1): server = "sargeras"
             character_info = get_char(name, server, target_region)
             yield from client.send_message(incoming_mes.channel,
                                            character_info)
@@ -344,14 +342,16 @@ def on_message(incoming_mes):
                 incoming_mes.channel,
                 'A sim is currently running, please wait.')
         if not simming:
+            characterinc = incoming_mes.content[6:]
+            if '-' not in characterinc: characterinc += "-sargeras"
             yield from client.send_message(incoming_mes.channel,
                                            'Running your sim...')
             yield from client.send_message(
                 incoming_mes.channel,
                 'Your sim will show up here when complete: https://simc.aki.fyi/'
-                + incoming_mes.content[6:] + '.html')
+                + characterinc + '.html')
             simming = True
-            incoming_data = incoming_mes
+            incoming_data = characterinc
             thread = threading.Thread(target=sim_char, args=(incoming_data, ))
             thread.start()
 
