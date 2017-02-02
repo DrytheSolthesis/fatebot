@@ -261,7 +261,7 @@ def sim_char(incoming_data):
     global simming
     print("RUNNING SIM")
     characterinc = incoming_data.content[6:]
-    if '-' is not in characterinc: characterinc+="-sargeras"
+    if '-' not in characterinc: characterinc+="-sargeras"
     character = ','.join(characterinc.split('-')[::-1])
     command = '/home/autumn/simcraft/simc/engine/simc'
     arg1 = 'armory=us,' + character
