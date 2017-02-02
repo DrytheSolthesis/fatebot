@@ -329,6 +329,7 @@ def on_message(incoming_mes):
             print(i)
             name = i[0]
             server = i[1]
+            if (!server): server = "Sargeras"
             character_info = get_char(name, server, target_region)
             yield from client.send_message(incoming_mes.channel,
                                            character_info)
