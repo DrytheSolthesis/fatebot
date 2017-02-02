@@ -164,6 +164,7 @@ def get_char(name, server, target_region):
     equipped_ivl = player_dict["items"]["averageItemLevelEquipped"]
     sockets = get_sockets(player_dict)
     enchants = get_enchants(player_dict)
+    nh_progress = get_raid_progression(player_dict, "The Nighthold")
     tov_progress = get_raid_progression(player_dict, "Trial of Valor")
     en_progress = get_raid_progression(player_dict, "The Emerald Nightmare")
     mythic_progress = get_mythic_progression(player_dict)
@@ -194,6 +195,9 @@ def get_char(name, server, target_region):
     return_string += "TOV: {1}/{0} (N), {2}/{0} (H), {3}/{0} (M)\n".format(
         tov_progress["total_bosses"], tov_progress["normal"],
         tov_progress["heroic"], tov_progress["mythic"])
+    return_string += "NH: {1}/{0} (N), {2}/{0} (H), {3}/{0} (M)\n".format(
+        nh_progress["total_bosses"], nh_progress["normal"],
+        nh_progress["heroic"], nh_progress["mythic"])
 
     # Gems
     return_string += "Gems Equipped: %s/%s\n" % (sockets["equipped_gems"],
