@@ -261,13 +261,12 @@ def sim_char(incoming_data):
     global simming
     print("RUNNING SIM")
     characterinc = incoming_data.content[6:]
+    if '-' is not in characterinc: characterinc+="-Sargeras"
     character = ','.join(characterinc.split('-')[::-1])
     command = '/home/autumn/simcraft/simc/engine/simc'
     arg1 = 'armory=us,' + character
     arg2 = 'settings.simc'
     arg3 = 'html=/home/www/simc.aki.fyi/' + characterinc + '.html'
-    if characterinc.lower() == 'animalia-sargeras':
-        arg2 = 'druidapl.simc'
     try:
         fd = open(arg3[5:], "w")
         fd.write("<h3>SIM IN PROGRESS</h3>")
