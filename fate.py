@@ -261,13 +261,12 @@ def sim_char(incoming_data):
     global simming
     print("RUNNING SIM")
     characterinc = incoming_data.content[6:]
+    if '-' not in characterinc: characterinc+="-sargeras"
     character = ','.join(characterinc.split('-')[::-1])
     command = '/home/autumn/simcraft/simc/engine/simc'
     arg1 = 'armory=us,' + character
     arg2 = 'settings.simc'
     arg3 = 'html=/home/www/simc.aki.fyi/' + characterinc + '.html'
-    if characterinc.lower() == 'animalia-sargeras':
-        arg2 = 'druidapl.simc'
     try:
         fd = open(arg3[5:], "w")
         fd.write("<h3>SIM IN PROGRESS</h3>")
@@ -329,7 +328,7 @@ def on_message(incoming_mes):
             print(i)
             name = i[0]
             server = i[1]
-            if (!server): server = "Sargeras"
+            if (!server): server = "sargeras"
             character_info = get_char(name, server, target_region)
             yield from client.send_message(incoming_mes.channel,
                                            character_info)
