@@ -306,7 +306,7 @@ def on_message(incoming_mes):
             if best_message:
                 messages.append(best_message)
         if len(messages):
-            if (random.randint(1, 40) == 32):
+            if (random.randint(1, 80) == 32):
                 yield from client.send_message(incoming_mes.channel,
                                                random.choice(messages))
 
@@ -316,8 +316,7 @@ def on_message(incoming_mes):
     if (incoming_mes.content.startswith("~logs")):
         yield from client.send_message(
             incoming_mes.channel,
-            'CogDis\'s WCL calendar: https://www.warcraftlogs.com/guilds/17287'
-        )
+            'CogDis\'s WCL calendar: https://www.warcraftlogs.com/guilds/17287')
 
     if (incoming_mes.content.startswith("~pug")):
         target_region = default_region
