@@ -313,7 +313,8 @@ def on_message(incoming_mes):
 
     if (incoming_mes.content.startswith("RIP")):
         yield from client.send_message(incoming_mes.channel, 'Ya, RIP')
-
+    if (incoming_mes.content.startswith("RYP")):
+        yield from client.send_message(incoming_mes.channel, 'Yy, RYP')
     if (incoming_mes.content.startswith("~logs")):
         yield from client.send_message(
             incoming_mes.channel,
@@ -322,7 +323,7 @@ def on_message(incoming_mes):
     if (incoming_mes.content.startswith("~pug")):
         target_region = default_region
         try:
-            i = str(incoming_mes.content[5:]).split('-')
+            i = str(incoming_mes.content[5:]).split('-', 1)
             print(i)
             name = i[0]
             if (len(i) > 1): server = i[1]
