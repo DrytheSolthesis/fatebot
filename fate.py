@@ -313,12 +313,13 @@ def on_message(incoming_mes):
 
     if (incoming_mes.content.startswith("RIP")):
         yield from client.send_message(incoming_mes.channel, 'Ya, RIP')
-    if (incoming_mes.content.startswith("RYP")):
-        yield from client.send_message(incoming_mes.channel, 'Yy, RYP')
+
     if (incoming_mes.content.startswith("~logs")):
-        yield from client.send_message(
-            incoming_mes.channel,
-            'CogDis\'s WCL calendar: https://www.warcraftlogs.com/guilds/17287')
+        em = discord.Embed(
+            title="CogDis\'s WCL calendar:",
+            description="https://www.warcraftlogs.com/guilds/17287",
+            colour=0xDEADBF)
+        yield from client.send_message(incoming_mes.channel, embed=em)
 
     if (incoming_mes.content.startswith("~pug")):
         target_region = default_region
@@ -329,8 +330,9 @@ def on_message(incoming_mes):
             if (len(i) > 1): server = i[1]
             if (len(i) == 1): server = "sargeras"
             character_info = get_char(name, server, target_region)
-            yield from client.send_message(incoming_mes.channel,
-                                           character_info)
+            em = discord.Embed(
+                title="", description=character_info, colour=0xDEADBF)
+            yield from client.send_message(incoming_mes.channel, embed=em)
         except Exception as e:
             yield from client.send_message(
                 incoming_mes.channel, e +
@@ -345,12 +347,12 @@ def on_message(incoming_mes):
         if not simming:
             characterinc = incoming_mes.content[6:]
             if '-' not in characterinc: characterinc += "-sargeras"
-            yield from client.send_message(incoming_mes.channel,
-                                           'Running your sim...')
-            yield from client.send_message(
-                incoming_mes.channel,
-                'Your sim will show up here when complete: https://simc.aki.fyi/'
-                + characterinc + '.html')
+            em = discord.Embed(
+                title="Running Sim for " + characterinc,
+                description='Your sim will show up here when complete: https://simc.aki.fyi/'
+                + characterinc + '.html',
+                colour=0xDEADBF)
+            yield from client.send_message(incoming_mes.channel, embed=em)
             simming = True
             incoming_data = characterinc
             thread = threading.Thread(target=sim_char, args=(incoming_data, ))
