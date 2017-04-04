@@ -316,8 +316,8 @@ def on_message(incoming_mes):
 
     if (incoming_mes.content.startswith("~logs")):
         em = discord.Embed(
-            title="CogDis\'s WCL calendar:",
-            description="https://www.warcraftlogs.com/guilds/17287",
+            title="CogDis\'s WCL Calendar",
+            url="https://www.warcraftlogs.com/guilds/17287",
             colour=0xDEADBF)
         yield from client.send_message(incoming_mes.channel, embed=em)
 
@@ -349,8 +349,8 @@ def on_message(incoming_mes):
             if '-' not in characterinc: characterinc += "-sargeras"
             em = discord.Embed(
                 title="Running Sim for " + characterinc,
-                description='Your sim will show up here when complete: https://simc.aki.fyi/'
-                + characterinc + '.html',
+                url='https://simc.aki.fyi/' + characterinc + '.html',
+                description='Your sim will show up at the link above when it completes shortly.',
                 colour=0xDEADBF)
             yield from client.send_message(incoming_mes.channel, embed=em)
             simming = True
