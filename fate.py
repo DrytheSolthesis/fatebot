@@ -365,6 +365,12 @@ def on_message(incoming_mes):
                 "saemotes/" + incoming_mes.content,
                 filename="emote.png")
 
+    if (incoming_mes.content.lower() == "mother of god"):
+        yield from client.send_file(
+            incoming_mes.channel,
+            "motherofgod.gif",
+            filename="motherofgod.gif")
+
     if (incoming_mes.author.id != "169962512194732034" and
             incoming_mes.channel.id == "162770083993616385" and
             random.randint(1, 2) == 2):
