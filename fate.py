@@ -310,6 +310,11 @@ def on_message(incoming_mes):
             if (random.randint(1, 80) == 32):
                 yield from client.send_message(incoming_mes.channel,
                                                random.choice(messages))
+            if (random.randint(1, 100) == 42):
+                yield from client.send_message(incoming_mes.channel,
+                                               ':thinking:')
+
+
 
     if (incoming_mes.content.startswith("RIP")):
         yield from client.send_message(incoming_mes.channel, 'Ya, RIP')
@@ -364,6 +369,14 @@ def on_message(incoming_mes):
                 incoming_mes.channel,
                 "saemotes/" + incoming_mes.content,
                 filename="emote.png")
+
+    adjectives = ["bad", "shit", "worst", "horrible"]
+    nouns = ["leggo", "legendary", "leggos", "legendaries"]
+    if any(x in incoming_mes.content for x in adjectives):
+      if any(x in incoming_mes.content for x in nouns):
+            yield from client.send_message(
+                incoming_mes.channel, ':thinking:')
+
 
     if (incoming_mes.content.lower() == "mother of god"):
         yield from client.send_file(
