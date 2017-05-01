@@ -4,8 +4,8 @@ from funcs import *
 
 messages = []
 simming = None
-
 client = discord.Client()
+messages_to_generate = 20
 
 
 def sim_char(incoming_data):
@@ -111,6 +111,11 @@ def on_message(incoming_mes):
             incoming_data = characterinc
             thread = threading.Thread(target=sim_char, args=(incoming_data, ))
             thread.start()
+    
+    if (incoming_mes.content.lower() == ":kassia:"):
+        reply = random_emoji(6) + random_emoji(6) + "Kassia" + random_emoji(6) + random_emoji(6)
+        yield from client.send_message(incoming_mes.channel, reply)
+
 
     if (incoming_mes.content.startswith(":")):
         if (incoming_mes.content.endswith(":")):
@@ -119,6 +124,8 @@ def on_message(incoming_mes):
                 "saemotes/" + incoming_mes.content,
                 filename="emote" +
                 (".gif" if (incoming_mes.content == ":bookie:") else ".png"))
+
+
 
     adjectives = ["bad", "shit", "worst", "horrible"]
     nouns = ["leggo", "legendary", "leggos", "legendaries"]
