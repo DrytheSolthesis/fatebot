@@ -127,7 +127,7 @@ def on_message(incoming_mes):
 
 
 
-    adjectives = ["bad", "shit", "worst", "horrible"]
+    adjectives = ["bad", "shit", "worst", "horrible", "terrible", "garbage", "trash"]
     nouns = ["leggo", "legendary", "leggos", "legendaries"]
     if any(x in incoming_mes.content for x in adjectives):
         if any(x in incoming_mes.content for x in nouns):
